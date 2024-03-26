@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -13,16 +15,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.musicappui.Screen
+import com.example.musicappui.screensInDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -32,11 +41,19 @@ fun MainView() {
 
     val scaffoldState: ScaffoldState = rememberScaffoldState()
     val scope: CoroutineScope = rememberCoroutineScope()
+    // allow us to find out on which "View" we current are
+    val controller: NavController = rememberNavController()
+    val navBackStackEntry by controller.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val title = remember {
+        // TODO change that to currentScreen.title
+        mutableStateOf("")
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Home") },
+                title = { Text(text = title.value) },
                 navigationIcon = {
                     IconButton(onClick = {
                         // OPEN THE DRAWER
@@ -48,6 +65,24 @@ fun MainView() {
                     }
                 }
             )
+        },
+        scaffoldState = scaffoldState,
+        drawerContent = {
+            LazyColumn(modifier = Modifier.padding(16.dp)) {
+                items(screensInDrawer) { item ->
+                    DrawerItem(selected = currentRoute == item.drawerRoute, item = item) {
+                        scope.launch {
+                            scaffoldState.drawerState.close()
+                        }
+                        if (item.drawerRoute == "add_account") {
+                            // open dialog
+                        } else {
+                            controller.navigate(item.drawerRoute)
+                            title.value = item.drawerTitle
+                        }
+                    }
+                }
+            }
         }
     ) {
         Text(text = "Text", modifier = Modifier.padding(it))
