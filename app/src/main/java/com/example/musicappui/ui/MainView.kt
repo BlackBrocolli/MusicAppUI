@@ -72,17 +72,21 @@ fun MainView() {
         if (currentScreen is Screen.DrawerScreen || currentScreen == Screen.BottomScreen.Home) {
             BottomNavigation(modifier = Modifier.wrapContentSize()) {
                 screensInBottomBar.forEach { item ->
+
+                    val isSelected = currentRoute == item.bottomRoute
+                    val tint = if (isSelected) Color.White else Color.Black
                     BottomNavigationItem(
                         selected = currentRoute == item.bottomRoute,
                         onClick = { controller.navigate(item.bottomRoute) },
                         icon = {
                             Icon(
                                 painter = painterResource(id = item.icon),
-                                contentDescription = item.bottomTitle
+                                contentDescription = item.bottomTitle,
+                                tint = tint
                             )
                         },
                         label = {
-                            Text(text = item.bottomTitle)
+                            Text(text = item.bottomTitle, color = tint)
                         },
                         selectedContentColor = Color.White,
                         unselectedContentColor = Color.Black
@@ -177,7 +181,7 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd: Paddi
             BrowseScreen()
         }
         composable(Screen.BottomScreen.Library.route) {
-            // TODO add Library screen
+            LibraryView()
         }
     }
 }
