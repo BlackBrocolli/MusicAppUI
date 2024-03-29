@@ -29,6 +29,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.primarySurface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -147,7 +148,22 @@ fun MainView() {
                         }
                     },
                     // right icon
-
+                    actions = {
+                        IconButton(onClick = {
+                            scope.launch {
+                                if (modalSheetState.isVisible) {
+                                    modalSheetState.hide()
+                                } else {
+                                    modalSheetState.show()
+                                }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Icon More Vertical"
+                            )
+                        }
+                    }
                 )
             },
             scaffoldState = scaffoldState,
